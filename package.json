@@ -13,6 +13,7 @@
     "axios": "^0.27.2",
     "firebase": "^9.9.3",
     "firebase-admin": "^11.0.1",
-    "puppeteer": "^16.2.0"
+    "puppeteer": "^16.2.0",
+    "puppeteer-cluster": "^0.23.0"
   }
 }
