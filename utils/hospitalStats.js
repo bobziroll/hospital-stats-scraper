@@ -42,13 +42,44 @@ async function getHospitalUrls() {
 
 async function getPrimaryData(page) {
     return await page.$eval(".details-col", (el) => {
+        function titleCase(str) {
+            // console.log(str)
+            return str
+                .replace(/\s+/g, " ") // Remove any multiple spaces in the string
+                .trim()
+                .split(" ")
+                .map((str) => {
+                    return str[0].toUpperCase() + str.substring(1).toLowerCase()
+                })
+                .join(" ")
+        }
         let info = {}
         info.name = el.querySelector("h1")?.textContent || null
-        info.address = el
+        let addressInfo = el
             .querySelector(".facility-address")
             ?.textContent.split("\n")
             .map((str) => str.trim())
             .filter((str) => !!str)
+
+        if (addressInfo[1].split(", ").length > 2) {
+            throw new Error(`Skipping ${info.name} due to irregular address`)
+        }
+        let address = addressInfo.reduce((prev, curr, i) => {
+            if (i === 0) {
+                prev.street = titleCase(curr)
+            } else {
+                let split = curr.split(", ")
+                prev.city = titleCase(split[0])
+                let stateZip = split[1].split(" ")
+                let zip = stateZip[stateZip.length - 1]
+                stateZip.pop()
+                let state = stateZip.join(" ")
+                prev.state = titleCase(state)
+                prev.zip = zip
+            }
+            return prev
+        }, {})
+        info.address = address
         info.surveySubmitDate = el.querySelector(
             ".suvey-submitted-date-value"
         ).textContent
