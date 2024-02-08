@@ -1,4 +1,5 @@
 // @ts-nocheck
+// TODO: Update to JSDOM instead of puppeteer. Should be leagues faster.
 const puppeteer = require("puppeteer")
 const { Cluster } = require("puppeteer-cluster")
 const fs = require("fs/promises")
